@@ -1,0 +1,51 @@
+{
+  "name": "openplayuk/omnipay-pay360",
+  "type": "library",
+  "description": "Payment Gateway driver for Pay360",
+  "keywords": [
+    "Pay360",
+    "gateway",
+    "merchant",
+    "omnipay",
+    "pay",
+    "payment"
+  ],
+  "homepage": "https://github.com/openplayuk/omnipay-pay360",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ian Pridham",
+      "email": "ian@openplay.co.uk",
+      "role": "Developer"
+    },
+    {
+      "name": "Andy Coates",
+      "email": "andy@acoates.co.uk",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-0": {
+      "scpService": "lib"
+    },
+    "psr-4": {
+      "OpenPlay\\Pay360\\": "src"
+    }
+  },
+  "require": {
+    "ext-soap": "*",
+    "omnipay/common": "^3",
+    "php": "^7",
+    "symfony/event-dispatcher": "^2.8"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^2.0",
+    "omnipay/tests": "^3",
+    "satooshi/php-coveralls": "^1.0"
+  },
+  "scripts": {
+    "run-sa": "vendor/bin/phpstan analyse --ansi --no-progress -c phpstan.neon -l 4 src tests",
+    "run-fixer": "vendor/bin/php-cs-fixer fix",
+    "run-tests": "vendor/bin/phpunit"
+  }
+}
