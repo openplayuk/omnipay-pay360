@@ -34,6 +34,14 @@ class scpService_lgItemDetails
     /**
      * @basetype generalString
      *
+     * @var      string $additionalReference
+     */
+    public $reference;
+
+
+    /**
+     * @basetype generalString
+     *
      * @var      string $narrative
      */
     public $narrative;

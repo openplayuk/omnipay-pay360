@@ -74,7 +74,8 @@ class PurchaseRequest extends AbstractPay360Request
         $routing->scpId = $this->getRoutingScpId();
 
         $saleSummary = new \scpService_summaryData();
-        $saleSummary->description = $this->getTransactionId();
+        $saleSummary->reference = $this->getReference();
+        $saleSummary->description = $this->getDescription();
         $saleSummary->amountInMinorUnits = $this->getAmountInteger();
 
         /** @var \scpService_simpleItem[]|\scpService_items $items */
@@ -85,15 +86,17 @@ class PurchaseRequest extends AbstractPay360Request
             $itemSummary = new \scpService_summaryData();
             $itemSummary->description = $itemBagItem->getName();
             $itemSummary->amountInMinorUnits = (int)round(100 * $itemBagItem->getPrice() * $itemBagItem->getQuantity());
-            $itemSummary->reference = $this->getReference();
+            $itemSummary->reference =$itemBagItem->getDescription();
 
             $lgItemItemDetails = new \scpService_lgItemDetails();
             $lgItemItemDetails->fundCode = $this->getFundCode();
-
+            $lgItemItemDetails->reference =$itemBagItem->getDescription();
             $item = new \scpService_simpleItem();
             $item->itemSummary = $itemSummary;
             $item->lgItemDetails = $lgItemItemDetails;
             $item->quantity = $itemBagItem->getQuantity();
+            $item->quantity = $itemBagItem->getQuantity();
+
             $item->lineId = $lineId++;
 
             $items[] = $item;
@@ -121,7 +124,6 @@ class PurchaseRequest extends AbstractPay360Request
         if ($card->getBillingPostcode()) {
             $address->postcode = substr($card->getBillingPostcode(), 0, 10);
         }
-
         $contact = new \scpService_contact();
         if ($card->getEmail()) {
             $contact->email = substr($card->getEmail(), 0, 255);
