@@ -72,12 +72,10 @@ class PurchaseRequest extends AbstractPay360Request
         $routing->backUrl = $this->getBackUrl();
         $routing->siteId = $this->getRoutingSiteId();
         $routing->scpId = $this->getRoutingScpId();
-
         $saleSummary = new \scpService_summaryData();
         $saleSummary->reference = $this->getReference();
         $saleSummary->description = $this->getDescription();
         $saleSummary->amountInMinorUnits = $this->getAmountInteger();
-
         /** @var \scpService_simpleItem[]|\scpService_items $items */
         $items = [];
         $lineId = 1;
@@ -91,12 +89,16 @@ class PurchaseRequest extends AbstractPay360Request
             $lgItemItemDetails = new \scpService_lgItemDetails();
             $lgItemItemDetails->fundCode = $this->getFundCode();
             $lgItemItemDetails->reference =$itemBagItem->getDescription();
+            $lgItemItemDetails->additionalReference =$this->getReference();
+            $lgItemItemDetails->narrative =$this->getDescription();
             $item = new \scpService_simpleItem();
             $item->itemSummary = $itemSummary;
             $item->lgItemDetails = $lgItemItemDetails;
+            $contact = new \scpService_contact();
+            $contact->email = $this->getReference();
+            $item->lgItemDetails->contact = $contact;
             $item->quantity = $itemBagItem->getQuantity();
             $item->quantity = $itemBagItem->getQuantity();
-
             $item->lineId = $lineId++;
 
             $items[] = $item;
