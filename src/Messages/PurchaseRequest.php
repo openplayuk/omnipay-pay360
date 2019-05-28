@@ -72,43 +72,49 @@ class PurchaseRequest extends AbstractPay360Request
         $routing->backUrl = $this->getBackUrl();
         $routing->siteId = $this->getRoutingSiteId();
         $routing->scpId = $this->getRoutingScpId();
+
         $saleSummary = new \scpService_summaryData();
-        $saleSummary->reference = $this->getReference();
-        $saleSummary->description = $this->getDescription();
+        $saleSummary->description = $this->getTransactionId();
         $saleSummary->amountInMinorUnits = $this->getAmountInteger();
+
         /** @var \scpService_simpleItem[]|\scpService_items $items */
         $items = [];
         $lineId = 1;
+
+        $card = $this->getCard() ?? new CreditCard();
+        $contact = new \scpService_contact();
+        if ($card->getEmail()) {
+            $contact->email = substr($card->getEmail(), 0, 255);
+        }
+
         /** @var \Omnipay\Common\Item $itemBagItem */
         foreach ($this->getItems() as $itemBagItem) {
             $itemSummary = new \scpService_summaryData();
             $itemSummary->description = $itemBagItem->getName();
             $itemSummary->amountInMinorUnits = (int)round(100 * $itemBagItem->getPrice() * $itemBagItem->getQuantity());
-            $itemSummary->reference =$itemBagItem->getDescription();
-
+            $itemSummary->reference = $itemBagItem->getDescription();
             $lgItemItemDetails = new \scpService_lgItemDetails();
             $lgItemItemDetails->fundCode = $this->getFundCode();
-            $lgItemItemDetails->reference =$itemBagItem->getDescription();
-            $lgItemItemDetails->additionalReference =$this->getReference();
-            $lgItemItemDetails->narrative =$this->getDescription();
+            $lgItemItemDetails->narrative = $itemBagItem->getName();
+            $lgItemItemDetails->reference = $itemBagItem->getDescription();
+            $lgItemItemDetails->additionalReference =$card->getEmail();
+
+
             $item = new \scpService_simpleItem();
             $item->itemSummary = $itemSummary;
             $item->lgItemDetails = $lgItemItemDetails;
-            $contact = new \scpService_contact();
-            $contact->email = $this->getReference();
-            $item->lgItemDetails->contact = $contact;
-            $item->quantity = $itemBagItem->getQuantity();
             $item->quantity = $itemBagItem->getQuantity();
             $item->lineId = $lineId++;
 
             $items[] = $item;
         }
 
+
         $sale = new \scpService_simpleSale();
         $sale->saleSummary = $saleSummary;
         $sale->items = $items;
 
-        $card = $this->getCard() ?? new CreditCard();
+
 
         $address = new \scpService_address();
         if ($card->getBillingAddress1()) {
@@ -126,10 +132,8 @@ class PurchaseRequest extends AbstractPay360Request
         if ($card->getBillingPostcode()) {
             $address->postcode = substr($card->getBillingPostcode(), 0, 10);
         }
-        $contact = new \scpService_contact();
-        if ($card->getEmail()) {
-            $contact->email = substr($card->getEmail(), 0, 255);
-        }
+
+
 
         $billingDetails = new \scpService_billingDetails();
         $billingDetails->cardHolderDetails = new \scpService_cardHolderDetails();
